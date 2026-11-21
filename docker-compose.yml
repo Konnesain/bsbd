@@ -1,0 +1,26 @@
+services:
+  postgres:
+    build: .
+    image: my-postgres-pgaudit:latest
+    container_name: transport_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: transport
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    ports:
+      - "6000:5432"
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+      - pgdata:/var/lib/postgresql
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_preload_libraries=pgaudit"
+      - "-c"
+      - "pgaudit.log=all"
+      - "-c"
+      - "pgaudit.log_catalog=off"
+
+volumes:
+  pgdata:
